@@ -2,7 +2,7 @@ name: "k8s with GitHub Actions"
 on:
   push:
     branches:
-      - staging
+      - master
 jobs:
   k8s:
     name: "Install"
