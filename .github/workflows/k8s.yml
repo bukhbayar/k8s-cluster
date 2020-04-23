@@ -10,7 +10,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/checkout@v2
         with:
-          repository: bukhbayar/k8s-api@v1.2
+          repository: bukhbayar/k8s-api/releases/tag/v1.2
           token: ${{ secrets.ACCESS_TOKEN }}
       - name: Build Docker Image
         run: |
