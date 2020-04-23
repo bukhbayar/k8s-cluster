@@ -37,9 +37,8 @@ jobs:
           mkdir -p ~/.ssh
           ssh-keyscan github.com >> ~/.ssh/known_hosts
           ssh-agent -a $SSH_AUTH_SOCK > /dev/null
-          ssh-add - <<< "${{ secrets.k8S_SECRET_PRIVATE_KEY }}"
-          ls -l ~/runners
-          ls -l ~/work
+          ssh-add ~/.ssh/id_rsa - <<< "${{ secrets.k8S_SECRET_PRIVATE_KEY }}"
+          ls -l ~/.ssh
       - name: "Building Cluster"
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
@@ -54,7 +53,7 @@ jobs:
           echo " "
           echo " --------------------------- K8S CLUSTER --------------------------------- "
           echo " "
-          kops create secret --name api.data3.xyz sshpublickey admin -i ~/runners/.ssh/id_rsa.pub
+          kops create secret --name api.data3.xyz sshpublickey admin -i ~/.ssh/id_rsa.pub
           kops create cluster \
             --name api.data3.xyz \
             --master-size t2.micro \
