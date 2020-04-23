@@ -25,7 +25,11 @@ jobs:
           echo " "
           echo " --------------------------- AWSCLI ------------------------------------- "
           echo " "
+          pip --version
+          which pip
           pip install awscli
+      - name: "Building Cluster"
+        run: |
           echo " "
           echo " --------------------------- ENV ------------------------------------- "
           echo " "
@@ -34,7 +38,6 @@ jobs:
           echo " "
           echo " --------------------------- CLUSTER ------------------------------------- "
           echo " "
-          aws ec2 describe-availability-zones --region ap-southeast-1
           kops create cluster \
             --name api.data3.xyz \
             --master-size t2.micro \
