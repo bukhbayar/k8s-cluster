@@ -4,15 +4,12 @@ on:
     branches:
       - master
 jobs:
-  test:
+  deploy:
     runs-on: ubuntu-18.04
+    needs: test
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          node-version: "13.x"
       - uses: bukhbayar/k8s-api@v1.1
-      - name: Install & Tests
+      - name: Build Docker Image
         run: |
-          npm install
-          npm test
+          docker build -t k8s-api .

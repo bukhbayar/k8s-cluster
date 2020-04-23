@@ -1,15 +1,15 @@
-  deploy:
-    runs-on: ubuntu-18.04
-    needs: test
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-            node-version: "13.x"
-      - uses: bukhbayar/k8s-api@v1.1
-      - name: Build Docker Image
-        run: |
-          docker build -t k8s-api .
+test:
+runs-on: ubuntu-18.04
+steps:
+  - uses: actions/checkout@v2
+  - uses: actions/setup-node@v1
+    with:
+      node-version: "13.x"
+  - uses: bukhbayar/k8s-api@v1.1
+  - name: Install & Tests
+    run: |
+      npm install
+      npm test
 build:
     name: Deployment with k8s cluster
     runs-on: ubuntu-18.04
