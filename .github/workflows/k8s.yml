@@ -4,10 +4,11 @@ on:
     branches:
       - master
 jobs:
-  deploy:
+  deploy-api:
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
+      - uses: bukhbayar/k8s-api@v1.1
       - name: Build Docker Image
         run: |
           docker images
