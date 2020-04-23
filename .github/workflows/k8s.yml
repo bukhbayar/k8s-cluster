@@ -5,10 +5,10 @@ on:
       - master
 jobs:
   k8s:
-    name: "k8s"
+    name: "Deployment with k8s"
     runs-on: ubuntu-latest
     steps:
-      - name: "Installing Env"
+      - name: "Preparing Env"
         run: |
           echo " "
           echo " --------------------------- KOPS ------------------------------------- "
@@ -31,18 +31,15 @@ jobs:
           pip3 install awscli
       - name: "Building Cluster"
         run: |
-          echo " "
-          echo " --------------------------- ENV ------------------------------------- "
-          echo " "
           export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
           export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
           echo " "
-          echo " --------------------------- CLUSTER ------------------------------------- "
+          echo " --------------------------- K8S CLUSTER --------------------------------- "
           echo " "
           kops create cluster \
             --name api.data3.xyz \
             --master-size t2.micro \
             --node-size t2.micro \
             --state s3://api-data3-xyz-state-store \
-            --zones ap-southeast-1
+            --zones ap-southeast-1a
             --yes
