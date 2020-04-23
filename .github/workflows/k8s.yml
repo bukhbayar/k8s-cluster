@@ -38,7 +38,8 @@ jobs:
           ssh-keyscan github.com >> ~/.ssh/known_hosts
           ssh-agent -a $SSH_AUTH_SOCK > /dev/null
           ssh-add - <<< "${{ secrets.k8S_SECRET_PRIVATE_KEY }}"
-          eval $(ssh-agent)
+          ssh-add -l
+          ssh-add -K ~/.ssh/id_rsa
           ls -l ~/.ssh
       - name: "Building Cluster"
         run: |
