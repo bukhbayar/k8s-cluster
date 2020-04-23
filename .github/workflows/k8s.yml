@@ -6,8 +6,9 @@ on:
 jobs:
   k8s:
     name: "Deployment with k8s"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     steps:
+      - uses: actions/checkout@v1
       - name: "Preparing Env"
         run: |
           echo " "
@@ -29,27 +30,30 @@ jobs:
           sudo apt-get install python3-setuptools
           pip3 install wheel
           pip3 install awscli
+      - name: "Setup SSH Keys"
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+          ssh-add - <<< "${{ secrets.k8S_SECRET_PRIVATE_KEY }}"
       - name: "Building Cluster"
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         run: |
           echo " "
           echo " --------------------------- VARIABLES ----------------------------------- "
           echo " "
+          ls ~/.ssh/
           export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
           export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
           export NAME=api.data3.xyz
           export KOPS_STATE_STORE=s3://api-data3-xyz-state-store
           echo " "
-          echo " --------------------------- K8S SSH ------------------------------------- "
-          echo " "
-          mkdir -p ~/.ssh
-          ssh-keyscan github.com >> ~/.ssh/known_hosts
-          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
-          ssh-add - <<< "${{ secrets.K8S_SECRET_PUB }}"
-          ls ~/.ssh/
-          kops create secret --name api.data3.xyz sshpublickey admin -i ~/.ssh/id_rsa.pub
-          echo " "
           echo " --------------------------- K8S CLUSTER --------------------------------- "
           echo " "
+          kops create secret --name api.data3.xyz sshpublickey admin -i ~/.ssh/id_rsa.pub
           kops create cluster \
             --name api.data3.xyz \
             --master-size t2.micro \
