@@ -14,7 +14,6 @@ jobs:
           echo "${{ secrets.g_SECRET_PUBLIC_KEY }}" > ~/.ssh/github.pub
           echo "${{ secrets.g_SECRET_PRIVATE_KEY }}" > ~/.ssh/github
           echo "${{ secrets.g_CONFIG }}" > ~/.ssh/config
-          ls -a -ltr ~/.ssh
           chmod 644 ~/.ssh/github.pub
           chmod 600 ~/.ssh/github
           chmod 644 ~/.ssh/config
@@ -23,5 +22,4 @@ jobs:
           git clone git@github.com:bukhbayar/k8s-api.git
       - name: Build Docker Image
         run: |
-          ls -ltr
-          pwd
+          docker build -t k8s-api:v1.2 -f docker-api/Dockerfile .
