@@ -43,7 +43,7 @@ jobs:
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         run: |
-          cat ~/.ssh/id_rsa
+          find / -name *.pub
           echo " "
           echo " --------------------------- VARIABLES ----------------------------------- "
           echo " "
