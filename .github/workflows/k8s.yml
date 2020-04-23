@@ -35,11 +35,9 @@ jobs:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan github.com >> ~/.ssh/known_hosts
-          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
-          ssh-add - <<< "${{ secrets.k8S_SECRET_PRIVATE_KEY }}"
           echo "${{ secrets.k8S_SECRET_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          ls -l ~/.ssh
+          echo "${{ secrets.k8S_SECRET_PUBLIC_KEY }}" > ~/.ssh/id_rsa.pub
+          cat ~/.ssh/id_rsa.pub
       - name: "Building Cluster"
         run: |
           echo " "
