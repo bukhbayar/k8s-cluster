@@ -37,7 +37,7 @@ jobs:
           mkdir -p ~/.ssh
           ssh-keyscan github.com >> ~/.ssh/known_hosts
           ssh-agent -a $SSH_AUTH_SOCK > /dev/null
-          ssh-add - <<< ${{ secrets.k8S_SECRET_PRIVATE_KEY }}
+          ssh-add - <<< "${{ secrets.k8S_SECRET_PRIVATE_KEY }}"
           eval $(ssh-agent)
           ls -l ~/.ssh
       - name: "Building Cluster"
