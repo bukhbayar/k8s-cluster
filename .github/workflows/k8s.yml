@@ -54,5 +54,5 @@ jobs:
             --node-size t2.micro \
             --state s3://api-data3-xyz-state-store \
             --dns-zone=api.data3.xyz \
-            --zones ap-southeast-1a
+            --zones ap-southeast-1a \
             --yes
