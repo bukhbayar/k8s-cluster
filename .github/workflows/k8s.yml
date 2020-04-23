@@ -9,9 +9,5 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build Docker Image
-      - uses: actions/checkout@v2
-        with:
-          repository: bukhbayar/k8s-api@v1.2
-          token: ${{ secrets.GITHUB_TOKEN }}
         run: |
           docker images
