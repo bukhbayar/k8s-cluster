@@ -8,10 +8,14 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/checkout@v2
-        with:
-          repository: bukhbayar/k8s-api/releases/tag/v1.2
-          token: ${{ secrets.ACCESS_TOKEN }}
+      - name: Setup SSH Keys
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.g_SECRET_PUBLIC_KEY }}" > ~/.ssh/github.pub
+          echo "${{ secrets.g_CONFIG }}" > ~/.ssh/config
+      - name: Clone repo
+        run: |
+          git clone git@github.com:bukhbayar/k8s-api.git
       - name: Build Docker Image
         run: |
           ls -ltr
