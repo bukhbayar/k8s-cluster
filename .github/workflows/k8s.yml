@@ -5,7 +5,7 @@ on:
       - master
 jobs:
   k8s:
-    name: "Install"
+    name: "k8s"
     runs-on: ubuntu-latest
     steps:
       - name: "Installing Env"
@@ -25,9 +25,8 @@ jobs:
           echo " "
           echo " --------------------------- AWSCLI ------------------------------------- "
           echo " "
-          pip --version
-          which pip
-          pip install awscli
+          pip3 install wheel
+          pip3 install awscli
       - name: "Building Cluster"
         run: |
           echo " "
