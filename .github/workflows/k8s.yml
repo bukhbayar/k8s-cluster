@@ -31,13 +31,10 @@ jobs:
           pip3 install wheel
           pip3 install awscli
       - name: "Setup SSH Keys"
-        env:
-          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.k8S_SECRET_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           echo "${{ secrets.k8S_SECRET_PUBLIC_KEY }}" > ~/.ssh/id_rsa.pub
-          cat ~/.ssh/id_rsa.pub
       - name: "Building Cluster"
         run: |
           echo " "
@@ -50,7 +47,6 @@ jobs:
           echo " "
           echo " --------------------------- K8S CLUSTER --------------------------------- "
           echo " "
-          kops create secret --name api.data3.xyz sshpublickey admin -i ~/.ssh/id_rsa.pub
           kops create cluster \
             --cloud=aws \
             --name api.data3.xyz \
