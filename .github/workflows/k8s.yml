@@ -8,7 +8,10 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
-      - uses: bukhbayar/k8s-api@v1.2
       - name: Build Docker Image
+      - uses: actions/checkout@v2
+        with:
+          repository: bukhbayar/k8s-api@v1.2
+          token: ${{ secrets.GITHUB_TOKEN }}
         run: |
           docker images
