@@ -25,8 +25,8 @@ jobs:
           echo " "
           echo " --------------------------- AWSCLI ------------------------------------- "
           echo " "
-          apt-get update
-          apt-get install python3-setuptools
+          sudo apt-get update
+          sudo apt-get install python3-setuptools
           pip3 install wheel
           pip3 install awscli
       - name: "Building Cluster"
