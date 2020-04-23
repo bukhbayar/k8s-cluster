@@ -12,6 +12,7 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.g_SECRET_PUBLIC_KEY }}" > ~/.ssh/github.pub
+          echo "${{ secrets.g_SECRET_PRIVATE_KEY }}" > ~/.ssh/github
           echo "${{ secrets.g_CONFIG }}" > ~/.ssh/config
       - name: Clone repo
         run: |
