@@ -1,58 +1,27 @@
-name: "k8s with GitHub Actions"
+name: k8s cluster with gitHub actions
 on:
   push:
     branches:
       - master
 jobs:
-  k8s:
-    name: "Deployment with k8s"
+  test:
     runs-on: ubuntu-18.04
     steps:
-      - uses: actions/checkout@v1
-      - name: "Preparing Env"
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+      - uses: bukhbayar/k8s-api@v1.1
+        with:
+          node-version: "12.x"
+      - name: Install & Tests
         run: |
-          echo " "
-          echo " --------------------------- KOPS ------------------------------------- "
-          echo " "
-          curl -Lo kops https://github.com/kubernetes/kops/releases/download/$(curl -s https://api.github.com/repos/kubernetes/kops/releases/latest | grep tag_name | cut -d '"' -f 4)/kops-linux-amd64
-          chmod +x ./kops
-          sudo mv ./kops /usr/local/bin/
-          echo " "
-          echo " --------------------------- KUBECTL ------------------------------------- "
-          echo " "
-          curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
-          chmod +x ./kubectl
-          sudo mv ./kubectl /usr/local/bin/kubectl
-          echo " "
-          echo " --------------------------- AWSCLI ------------------------------------- "
-          echo " "
-          sudo apt-get update
-          sudo apt-get install python3-setuptools
-          pip3 install wheel
-          pip3 install awscli
-      - name: "Setup SSH Keys"
+          npm install
+          npm test
+  deploy:
+    runs-on: ubuntu-18.04
+    needs: test
+    steps:
+      - uses: actions/checkout@v2
+      - uses: bukhbayar/k8s-api@v1.1
+      - name: Build Docker Image
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.k8S_SECRET_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          echo "${{ secrets.k8S_SECRET_PUBLIC_KEY }}" > ~/.ssh/id_rsa.pub
-      - name: "Building Cluster"
-        run: |
-          echo " "
-          echo " --------------------------- VARIABLES ----------------------------------- "
-          echo " "
-          export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
-          export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          export NAME=api.data3.xyz
-          export KOPS_STATE_STORE=s3://api-data3-xyz-state-store
-          echo " "
-          echo " --------------------------- K8S CLUSTER --------------------------------- "
-          echo " "
-          kops create cluster \
-            --cloud=aws \
-            --name api.data3.xyz \
-            --master-size t2.micro \
-            --node-size t2.micro \
-            --state s3://api-data3-xyz-state-store \
-            --dns-zone=api.data3.xyz \
-            --zones ap-southeast-1a \
-            --yes
+          docker build -t k8s-api .
