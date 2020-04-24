@@ -42,5 +42,5 @@ jobs:
             --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-southeast-1.amazonaws.com
       - name: Setup ECR Repo
         run: |
-          export REPO_NAME = aws ecr describe-repositories | jq -r '.repositories[].repositoryName' | grep 'k8s-api'
+          export REPO_NAME=$(aws ecr describe-repositories | jq -r '.repositories[].repositoryName' | grep 'k8s-api')
           echo $REPO_NAME
