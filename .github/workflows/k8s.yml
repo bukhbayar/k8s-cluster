@@ -47,6 +47,7 @@ jobs:
             aws ecr create-repository \
               --repository-name k8s-api \
               --image-scanning-configuration scanOnPush=true \
+              --image-tag-mutability IMMUTABLE
               --region ap-southeast-1
           else
             echo "ECR Repo has been created!"
