@@ -23,3 +23,11 @@ jobs:
       - name: Build Docker Image
         run: |
           docker build -t k8s-api:v1.2 -f docker-api/Dockerfile .
+      - name: Docker Login
+        run: |
+          aws --version
+          aws ecr get-login-password \
+            --region ap-southeast-1 \
+            | docker login \
+            --username AWS \
+            --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-southeast-1.amazonaws.com
