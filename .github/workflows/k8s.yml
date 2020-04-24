@@ -40,7 +40,7 @@ jobs:
             | docker login \
             --username AWS \
             --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-southeast-1.amazonaws.com
-      - name: Setup ECR Repo
+      - name: Setup Amazon ECR repo
         run: |
           export REPO_NAME=$(aws ecr describe-repositories | jq -r '.repositories[].repositoryName' | grep 'k8s-api')
           if [ "$REPO_NAME" != "k8s-api" ]; then
@@ -52,7 +52,12 @@ jobs:
           else
             echo "ECR Repo has been created!"
           fi
-      - name: Push Docker Images to ECR Repo
+      - name: Push Docker images to ECR repo
         run: |
-          docker tag k8s-api:v1.2 ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/k8s-api:v1.2
-          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/k8s-api:v1.2
+          export IMAGE_TAG=$(aws ecr describe-images --repository-name k8s-api | jq -r '.imageDetails[].imageTags[]' | grep 'v1.2')
+          if [ "$IMAGE_TAG" != "v1.2" ]; then
+            docker tag k8s-api:v1.2 ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/k8s-api:v1.2
+            docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/k8s-api:v1.2
+          else
+            echo "This docker image has been pushed!"
+          fi
