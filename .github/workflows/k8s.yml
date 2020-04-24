@@ -47,7 +47,7 @@ jobs:
             aws ecr create-repository \
               --repository-name k8s-api \
               --image-scanning-configuration scanOnPush=true \
-              --region ${{ secrets.AWS_REGION }} \
+              --region ap-southeast-1 \
               --tags Key=app, Value=api
           else
             echo "ECR Repo has been created!"
