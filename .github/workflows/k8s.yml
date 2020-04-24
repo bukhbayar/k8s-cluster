@@ -43,8 +43,6 @@ jobs:
       - name: Setup ECR Repo
         run: |
           export REPO_NAME=$(aws ecr describe-repositories | jq -r '.repositories[].repositoryName' | grep 'k8s-api')
-          if: $REPO_NAME == 'k8s-api'
-          echo 'WORKING!!!'
-      - name: Test
-        run: |
-          echp 'Nah not working!'
+          if [ "$REPO_NAME" != "" ]; then
+            echo WOOHOO
+          fi
