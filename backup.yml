@@ -1,3 +1,9 @@
+- name: Push Docker to ECR
+        run: |
+          docker tag k8s-api:v1.2 ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/k8s-api:v1.2
+          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/k8s-api:v1.2
+
+
 test:
 runs-on: ubuntu-18.04
 needs: test

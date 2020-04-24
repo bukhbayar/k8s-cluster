@@ -40,7 +40,7 @@ jobs:
             | docker login \
             --username AWS \
             --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-southeast-1.amazonaws.com
-      - name: Push Docker to ECR
+      - name: Setup ECR Repo
         run: |
-          docker tag k8s-api:v1.2 ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/k8s-api:v1.2
-          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/k8s-api:v1.2
+          export REPO_NAME = aws ecr describe-repositories | jq -r '.repositories[].repositoryName' | grep 'k8s-api'
+          echo $REPO_NAME
