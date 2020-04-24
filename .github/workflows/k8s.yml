@@ -40,9 +40,7 @@ jobs:
             | docker login \
             --username AWS \
             --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-southeast-1.amazonaws.com
-      - name: Create ECR Repo
+      - name: Push Docker to ECR
         run: |
-          aws ecr create-repository \
-            --repository-name api-data3-xyz-container-repo \
-            --image-scanning-configuration scanOnPush=true \
-            --region ${{ secrets.AWS_REGION }}
+          docker tag k8s-api:v1.2 ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/k8s-api:v1.2 --tags Key=version,Value=v1.2
+          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/k8s-api:v1.2
