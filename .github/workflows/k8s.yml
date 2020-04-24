@@ -43,6 +43,12 @@ jobs:
       - name: Setup ECR Repo
         run: |
           export REPO_NAME=$(aws ecr describe-repositories | jq -r '.repositories[].repositoryName' | grep 'k8s-api')
-          if [ "$REPO_NAME" != "" ]; then
-            echo WOOHOO
+          if [ "$REPO_NAME" != "k8s-api" ]; then
+            aws ecr create-repository \
+              --repository-name k8s-api \
+              --image-scanning-configuration scanOnPush=true \
+              --region ${{ secrets.AWS_REGION }}
+              --tags Key=app, Value=api
+          else
+            echo "ECR Repo has been created!"
           fi
