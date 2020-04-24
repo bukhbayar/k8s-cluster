@@ -53,10 +53,5 @@ jobs:
           fi
       - name: Push Docker to ECR Repo
         run: |
-          export IMAGE_TAG=$(aws ecr describe-images --repository-name k8s-api | jq -r '.imageDetails[].imageTags[]' | grep 'v1.2')
-          if [ "$IMAGE_TAG" != "v1.2" ]; then
-            docker tag k8s-api:v1.2 ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/k8s-api:v1.2
-            docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/k8s-api:v1.2
-          else
-            echo "ECR Image has been pushed!"
-          fi
+          docker tag k8s-api:v1.2 ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/k8s-api:v1.2
+          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/k8s-api:v1.2
