@@ -28,11 +28,14 @@ jobs:
           curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
           unzip awscliv2.zip
           sudo ./aws/install
-          export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
-          export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          mkdir -p ~/.aws
+          echo "[default]
+          aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key = ${{ secrets.AWS_SECRET_KEY_ID }}
+          region = ap-southeast-1" > ~/.aws/credentials
       - name: AWS ECR Login
         run: |
-          aws --version
+          cat ~/.aws/credentials
           aws ecr get-login-password \
             --region ap-southeast-1 \
             | docker login \
