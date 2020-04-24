@@ -40,7 +40,7 @@ jobs:
             | docker login \
             --username AWS \
             --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-southeast-1.amazonaws.com
-      - name: AWS ECR Login
+      - name: Create ECR Repo
         run: |
           aws ecr create-repository \
             --repository-name api-data3-xyz-container-repo \
