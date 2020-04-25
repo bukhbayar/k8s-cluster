@@ -127,6 +127,7 @@ jobs:
           export NAME=api.data3.xyz
           export KOPS_STATE_STORE=s3://api-data3-xyz-state-store
           export ZONES=${ZONES:-"ap-southeast-1a,ap-southeast-1b,ap-southeast-1c"}
+          aws ec2 describe-availability-zones --region ${{ secrets.AWS_REGION }}
           kops create cluster \
             --cloud aws \
             --name api.data3.xyz \
