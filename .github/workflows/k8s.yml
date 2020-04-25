@@ -17,12 +17,25 @@ jobs:
           chmod 644 ~/.ssh/github.pub
           chmod 600 ~/.ssh/github
           chmod 644 ~/.ssh/config
-      - name: Clone repo
+      - name: Clone API repo
         run: |
-          git clone git@github.com:bukhbayar/k8s-api.git
-      - name: Build Docker Image
+          git clone --branch production --single-branch git@github.com:bukhbayar/k8s-api.git
+          cd k8s-api/
+          git checkout tags/v1.2
+          cd ..
+          pwd
+      - name: Clone APP repo
+        run: |
+          git clone --branch production --single-branch git@github.com:bukhbayar/k8s-frontend.git
+          cd k8s-frontend/
+          git checkout tags/v1.2
+          cd ..
+      - name: Build Docker image for API
         run: |
           docker build -t k8s-api:v1.2 -f docker-api/Dockerfile .
+      - name: Build Docker image for APP
+        run: |
+          docker build -t k8s-app:v1.2 -f docker-app/Dockerfile .
       - name: Setup awscli
         run: |
           curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
@@ -33,14 +46,14 @@ jobs:
           aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key = ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           region = ${{ secrets.AWS_REGION }}" > ~/.aws/credentials
-      - name: AWS ECR Login
+      - name: AWS ECR login
         run: |
           aws ecr get-login-password \
             --region ap-southeast-1 \
             | docker login \
             --username AWS \
             --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-southeast-1.amazonaws.com
-      - name: Setup Amazon ECR repo
+      - name: Setup ECR repo for k8s-api
         run: |
           export REPO_NAME=$(aws ecr describe-repositories | jq -r '.repositories[].repositoryName' | grep 'k8s-api')
           if [ "$REPO_NAME" != "k8s-api" ]; then
@@ -50,14 +63,35 @@ jobs:
               --image-tag-mutability IMMUTABLE \
               --region ap-southeast-1
           else
-            echo "ECR Repo has been created!"
+            echo "ECR repo for k8s-api has been created!"
           fi
-      - name: Push Docker images to ECR repo
+      - name: Setup ECR repo for k8s-app
+        run: |
+          export REPO_NAME=$(aws ecr describe-repositories | jq -r '.repositories[].repositoryName' | grep 'k8s-app')
+          if [ "$REPO_NAME" != "k8s-app" ]; then
+            aws ecr create-repository \
+              --repository-name k8s-app \
+              --image-scanning-configuration scanOnPush=true \
+              --image-tag-mutability IMMUTABLE \
+              --region ap-southeast-1
+          else
+            echo "ECR repo for k8s-app has been created!"
+          fi
+      - name: Push k8s-api docker image to ECR repo
         run: |
           export IMAGE_TAG=$(aws ecr describe-images --repository-name k8s-api | jq -r '.imageDetails[].imageTags[]' | grep 'v1.2')
           if [ "$IMAGE_TAG" != "v1.2" ]; then
             docker tag k8s-api:v1.2 ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/k8s-api:v1.2
             docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/k8s-api:v1.2
           else
-            echo "This docker image has been pushed!"
+            echo "k8s-api docker image has been pushed!"
+          fi
+      - name: Push k8s-app docker image to ECR repo
+        run: |
+          export IMAGE_TAG=$(aws ecr describe-images --repository-name k8s-app | jq -r '.imageDetails[].imageTags[]' | grep 'v1.2')
+          if [ "$IMAGE_TAG" != "v1.2" ]; then
+            docker tag k8s-app:v1.2 ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/k8s-app:v1.2
+            docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/k8s-app:v1.2
+          else
+            echo "k8s-app docker image has been pushed!"
           fi
