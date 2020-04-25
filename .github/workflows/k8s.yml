@@ -126,7 +126,7 @@ jobs:
         run: |
           export NAME=api.data3.xyz
           export KOPS_STATE_STORE=s3://api-data3-xyz-state-store
-          export ZONES=${ZONES:-"ap-southeast-1a, ap-southeast-1b, ap-southeast-1c"}
+          export ZONES=${ZONES:-"ap-southeast-1a,ap-southeast-1b,ap-southeast-1c"}
           kops create cluster \
             --cloud aws \
             --name api.data3.xyz \
