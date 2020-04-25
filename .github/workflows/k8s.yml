@@ -130,7 +130,7 @@ jobs:
           if [ ${EXISTING_CLUSTER_NAME} != ${KOPS_CLUSTER_NAME} ]; then
             echo "${EXISTING_CLUSTER_NAME} cluster is not created. So, ${KOPS_CLUSTER_NAME} will be created"
           else
-            echo "${KOPS_CLUSTER_NAME} cluster has been created"
+            echo "${KOPS_CLUSTER_NAME} cluster has been created!"
           fi
           kops create cluster \
             --cloud aws \
