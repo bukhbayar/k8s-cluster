@@ -124,17 +124,21 @@ jobs:
         run: |
           export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
           export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          export NAME=api.data3.xyz
+          export KOPS_CLUSTER_NAME=api.data3.xyz
           export KOPS_STATE_STORE=s3://api-data3-xyz-state-store
-          export ZONES=${ZONES:-"ap-southeast-1a,ap-southeast-1b,ap-southeast-1c"}
-          aws ec2 describe-availability-zones --region ${{ secrets.AWS_REGION }}
+          export EXISTING_CLUSTER_NAME=$(kops get cluster --name ${KOPS_CLUSTER_NAME} | cut -f1 | grep ${KOPS_CLUSTER_NAME})
+          if [ ${EXISTING_CLUSTER_NAME} != ${KOPS_CLUSTER_NAME} ]; then
+            echo "${EXISTING_CLUSTER_NAME} cluster is not created. So, ${KOPS_CLUSTER_NAME} will be created"
+          else
+            echo "${KOPS_CLUSTER_NAME} cluster has been created"
+          fi
           kops create cluster \
             --cloud aws \
-            --name api.data3.xyz \
+            --name ${KOPS_CLUSTER_NAME} \
             --master-size t2.micro \
             --node-size t2.micro \
             --node-count 3 \
-            --state s3://api-data3-xyz-state-store \
-            --dns-zone api.data3.xyz \
+            --state ${KOPS_STATE_STORE} \
+            --dns-zone ${KOPS_CLUSTER_NAME} \
             --zones ap-southeast-1a \
             --yes
