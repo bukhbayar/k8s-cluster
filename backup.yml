@@ -1,12 +1,3 @@
-- name: Push Docker to ECR Repo
-        run: |
-          export IMAGE_TAG=$(aws ecr describe-images --repository-name k8s-api | jq -r '.imageDetails[].imageTags[]' | grep 'v1.2')
-          if [ "$IMAGE_TAG" != "v1.2" ]; then
-            docker tag k8s-api:v1.2 ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/k8s-api:v1.2
-            docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/k8s-api:v1.2
-          else
-            echo "ECR Image has been pushed!"
-          fi
 test:
 runs-on: ubuntu-18.04
 needs: test
@@ -20,48 +11,3 @@ steps:
     run: |
       npm install
       npm test
-build:
-    name: Deployment with k8s cluster
-    runs-on: ubuntu-18.04
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup kops
-        run: |
-          curl -Lo kops https://github.com/kubernetes/kops/releases/download/$(curl -s https://api.github.com/repos/kubernetes/kops/releases/latest | grep tag_name | cut -d '"' -f 4)/kops-linux-amd64
-          chmod +x ./kops
-          sudo mv ./kops /usr/local/bin/
-      - name: Setup kubectl
-        run: |
-          curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
-          chmod +x ./kubectl
-          sudo mv ./kubectl /usr/local/bin/kubectl
-      - name: Setup awscli
-        run: |
-          sudo apt-get update
-          sudo apt-get install python3-setuptools
-          pip3 install wheel
-          pip3 install awscli
-          export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
-          export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      - name: Setup SSH Keys
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.k8S_SECRET_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          echo "${{ secrets.k8S_SECRET_PUBLIC_KEY }}" > ~/.ssh/id_rsa.pub
-      - name: "Building Cluster"
-        run: |
-          export NAME=api.data3.xyz
-          export KOPS_STATE_STORE=s3://api-data3-xyz-state-store
-          echo " "
-          echo " --------------------------- CREATING CLUSTER ---------------------------- "
-          echo " "
-          kops create cluster \
-            --cloud=aws \
-            --name api.data3.xyz \
-            --master-size t2.micro \
-            --node-size t2.micro \
-            --node-count 5 \
-            --state s3://api-data3-xyz-state-store \
-            --dns-zone=api.data3.xyz \
-            --zones ap-southeast-1a \
-            --yes
