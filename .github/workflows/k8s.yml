@@ -139,6 +139,7 @@ jobs:
               --dns-zone ${KOPS_CLUSTER_NAME} \
               --zones ap-southeast-1a \
               --yes
+            kops export kubecfg api.data3.xyz
             export READY_NODES=$(kubectl get nodes -o json | jq '.items[].status.conditions[].type | match("Ready") | .string')
             export TOTAL_READY_NODES=$(echo ${READY_NODES} | wc -l | sed 's/ //g')
             echo ${READY_NODES}
