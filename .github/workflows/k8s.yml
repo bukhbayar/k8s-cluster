@@ -174,9 +174,7 @@ jobs:
           export KOPS_CLUSTER_NAME=api.data3.xyz
           export KOPS_STATE_STORE=s3://api-data3-xyz-state-store
           export EXISTING_CLUSTER_NAME=$(kops get cluster --name ${KOPS_CLUSTER_NAME} | cut -f1 | grep ${KOPS_CLUSTER_NAME})
-          if [[ ${EXISTING_CLUSTER_NAME} != ${KOPS_CLUSTER_NAME} ]] || [[ ! -n ${EXISTING_CLUSTER_NAME} ]]; then
-            kops export kubecfg api.data3.xyz
-          fi
+          kops export kubecfg api.data3.xyz
           echo ' Waiting for deployment ... '
           kubectl apply -f ./manifests/deployment.yml
           kubectl wait --for=condition=available --timeout=600s -f ./manifests/deployment.yml
