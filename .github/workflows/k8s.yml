@@ -49,10 +49,10 @@ jobs:
       - name: AWS ECR login
         run: |
           aws ecr get-login-password \
-            --region ap-southeast-1 \
+            --region ${{ secrets.AWS_REGION }} \
             | docker login \
             --username AWS \
-            --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-southeast-1.amazonaws.com
+            --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
       - name: Setup ECR repo for k8s-api
         run: |
           export REPO_NAME=$(aws ecr describe-repositories | jq -r '.repositories[].repositoryName' | grep 'k8s-api')
@@ -61,7 +61,7 @@ jobs:
               --repository-name k8s-api \
               --image-scanning-configuration scanOnPush=true \
               --image-tag-mutability IMMUTABLE \
-              --region ap-southeast-1
+              --region ${{ secrets.AWS_REGION }}
           else
             echo "ECR repo for k8s-api has been created!"
           fi
@@ -73,7 +73,7 @@ jobs:
               --repository-name k8s-app \
               --image-scanning-configuration scanOnPush=true \
               --image-tag-mutability IMMUTABLE \
-              --region ap-southeast-1
+              --region ${{ secrets.AWS_REGION }}
           else
             echo "ECR repo for k8s-app has been created!"
           fi
@@ -127,7 +127,6 @@ jobs:
           export KOPS_CLUSTER_NAME=api.data3.xyz
           export KOPS_STATE_STORE=s3://api-data3-xyz-state-store
           export EXISTING_CLUSTER_NAME=$(kops get cluster --name ${KOPS_CLUSTER_NAME} | cut -f1 | grep ${KOPS_CLUSTER_NAME})
-          echo ${EXISTING_CLUSTER_NAME}
           if [[ ${EXISTING_CLUSTER_NAME} != ${KOPS_CLUSTER_NAME} ]] || [[ ! -n ${EXISTING_CLUSTER_NAME} ]]; then
             kops create cluster \
               --cloud aws \
@@ -185,8 +184,7 @@ jobs:
           export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
           export KOPS_CLUSTER_NAME=api.data3.xyz
           export KOPS_STATE_STORE=s3://api-data3-xyz-state-store
-          export EXISTING_CLUSTER_NAME=$(kops get cluster --name ${KOPS_CLUSTER_NAME} | cut -f1 | grep ${KOPS_CLUSTER_NAME})
           kops export kubecfg api.data3.xyz
           echo ' Waiting for deployment ... '
-          kubectl apply -f ./manifests/service.yml --record=true
-          kubectl apply -f ./manifests/deployment.yml --record=true
+          kubectl create -f ./manifests/service.yml
+          kubectl create -f ./manifests/deployment.yml
