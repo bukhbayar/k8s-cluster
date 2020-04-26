@@ -139,10 +139,9 @@ jobs:
               --dns-zone ${KOPS_CLUSTER_NAME} \
               --zones ap-southeast-1a \
               --yes
-            export READY_NODES=$(kubectl get nodes -o json | jq '.items[].status.conditions[].type | match("Ready") | .string')
-            export TOTAL_READY_NODES=$(echo ${READY_NODES} | wc -l | sed 's/ //g')
-            echo ${READY_NODES}
-            echo ${TOTAL_READY_NODES}
+            export READY_NODES=""
+            export TOTAL_READY_NODES=0
+            echo " Waiting cluster ... "
             while [ ${TOTAL_READY_NODES} -lt 4 ]
             do
               echo "Cluster is getting ready ... "
@@ -150,6 +149,7 @@ jobs:
               export READY_NODES=$(kubectl get nodes -o json | jq '.items[].status.conditions[].type | match("Ready") | .string')
               export TOTAL_READY_NODES=$(echo ${READY_NODES} | wc -l | sed 's/ //g')
               echo ${READY_NODES}
+              echo ${READY_NODES} | wc -l | sed 's/ //g'
               echo ${TOTAL_READY_NODES}
             done
           else
