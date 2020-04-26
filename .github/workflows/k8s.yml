@@ -142,15 +142,13 @@ jobs:
             export READY_NODES=""
             export TOTAL_READY_NODES=0
             echo " Waiting cluster ... "
+            sleep 60
             while [ ${TOTAL_READY_NODES} -lt 4 ]
             do
               echo "Cluster is getting ready ... "
               sleep 10
               export READY_NODES=$(kubectl get nodes -o json | jq '.items[].status.conditions[].type | match("Ready") | .string')
-              export TOTAL_READY_NODES=$(echo ${READY_NODES} | wc -l | sed 's/ //g')
-              echo ${READY_NODES}
-              echo ${READY_NODES} | wc -l | sed 's/ //g'
-              echo ${TOTAL_READY_NODES}
+              export TOTAL_READY_NODES=$(echo ${READY_NODES} | wc -w | sed 's/ //g')
             done
           else
             echo "${KOPS_CLUSTER_NAME} cluster has been created!"
