@@ -178,9 +178,9 @@ jobs:
           echo ' Waiting for deployment ... '
           kubectl create -f ./manifests/deployment.yml \
             wait \
-              --for=condition=available \
+              --for condition=available \
               --timeout=600s
           kubectl create -f ./manifests/service.yml \
             wait \
-              --for=condition=available \
+              --for condition=available \
               --timeout=600s
