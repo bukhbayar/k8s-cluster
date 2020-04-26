@@ -176,5 +176,5 @@ jobs:
           export EXISTING_CLUSTER_NAME=$(kops get cluster --name ${KOPS_CLUSTER_NAME} | cut -f1 | grep ${KOPS_CLUSTER_NAME})
           kops export kubecfg api.data3.xyz
           echo ' Waiting for deployment ... '
-          kubectl apply -f ./manifests/deployment.yml
-          kubectl wait --for=condition=available --timeout=600s -f ./manifests/deployment.yml
+          kubectl wait --for=condition=available --timeout=600s \
+            create -f ./manifests/deployment.yml
