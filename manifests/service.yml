@@ -1,13 +1,16 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: data3-service
+  name: data3-api-svc
   labels:
-    app: api
+    app: data3-api
+    type: api
 spec:
   selector:
     app: data3-api
-  type: LoadBalancer #NodePort
+    type: api
+  type: LoadBalancer
   ports:
-    - port: 80
+    - nodePort: 31000
+      port: 80
       targetPort: 3000

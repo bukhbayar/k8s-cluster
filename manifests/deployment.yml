@@ -3,7 +3,8 @@ kind: Deployment
 metadata:
   name: data3-deployment
   labels:
-    app: api
+    app: data3-api
+    type: api
 spec:
   replicas: 3
   minReadySeconds: 10
@@ -14,15 +15,17 @@ spec:
       maxSurge: 1
   selector:
     matchLabels:
-      app: api
+      app: data3-api
+      type: api
   template:
     metadata:
       labels:
-        app: api
+        app: data3-api
+        type: api
     spec:
       containers:
-        - name: data3-api
-          image: 030361376246.dkr.ecr.ap-southeast-1.amazonaws.com/k8s-api:v1.2
+        - name: data3-api-container
+          image: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-southeast-1.amazonaws.com/k8s-api:v1.2
           ports:
             - containerPort: 3000
           imagePullPolicy: Always
